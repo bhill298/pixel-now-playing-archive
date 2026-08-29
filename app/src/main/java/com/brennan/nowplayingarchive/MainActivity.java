@@ -73,6 +73,8 @@ public final class MainActivity extends Activity {
     }
 
     private void showHistory(boolean favorites) {
+        getWindow().setStatusBarColor(getColor(R.color.np_background));
+        getWindow().setNavigationBarColor(getColor(R.color.np_background));
         searchMode = false;
         settingsMode = false;
         favoritesOnly = favorites;
@@ -90,21 +92,21 @@ public final class MainActivity extends Activity {
             searchRow.setPadding(dp(24), dp(8), dp(24), dp(8));
             searchField = new EditText(this);
             searchField.setHint("Search history");
-            searchField.setTextSize(20);
+            searchField.setTextSize(18);
             searchField.setSingleLine(true);
             searchField.setTextColor(getColor(R.color.np_primary));
             searchField.setHintTextColor(getColor(R.color.np_secondary));
             searchField.setBackgroundResource(R.drawable.rounded_surface);
-            searchField.setPadding(dp(24), 0, dp(16), 0);
+            searchField.setPadding(dp(16), 0, dp(16), 0);
             searchField.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_search, 0, 0, 0);
             searchField.setCompoundDrawablePadding(dp(12));
             searchField.setFocusable(false);
             searchField.setOnClickListener(view -> showSearch());
             searchRow.addView(searchField, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(64)));
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(56)));
             page.addView(searchRow, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(80)));
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(72)));
         } else {
             searchField = null;
         }
@@ -116,7 +118,7 @@ public final class MainActivity extends Activity {
         list.setClipToPadding(false);
         list.setPadding(0, 0, 0, dp(112));
         List<Song> songs = database.query("", timeFilter, favoritesOnly);
-        historyAdapter = new HistoryAdapter(this, songs, this::showSongMenu);
+        historyAdapter = new HistoryAdapter(this, songs, true, this::showSongMenu);
         list.setAdapter(historyAdapter);
         content.addView(list, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -136,6 +138,7 @@ public final class MainActivity extends Activity {
     }
 
     private void showSearch() {
+        getWindow().setStatusBarColor(getColor(R.color.np_surface));
         searchMode = true;
         settingsMode = false;
         favoritesOnly = false;
@@ -146,45 +149,52 @@ public final class MainActivity extends Activity {
         toTime = "";
 
         LinearLayout page = basePage();
+        page.setBackgroundColor(getColor(R.color.np_surface));
         LinearLayout searchBar = new LinearLayout(this);
         searchBar.setGravity(Gravity.CENTER_VERTICAL);
-        searchBar.setPadding(dp(8), dp(4), dp(8), dp(4));
-        searchBar.setBackgroundResource(R.drawable.rounded_surface);
+        searchBar.setPadding(0, 0, 0, 0);
+        searchBar.setBackgroundColor(getColor(R.color.np_surface));
         ImageButton back = iconButton(R.drawable.ic_arrow_back, "Close search");
+        back.setPadding(dp(12), dp(12), dp(12), dp(12));
         back.setOnClickListener(view -> showHistory(false));
-        searchBar.addView(back, new LinearLayout.LayoutParams(dp(56), dp(56)));
+        searchBar.addView(back, new LinearLayout.LayoutParams(dp(48), dp(48)));
 
         searchField = new EditText(this);
         searchField.setHint("Search history");
-        searchField.setTextSize(20);
+        searchField.setTextSize(18);
         searchField.setSingleLine(true);
         searchField.setTextColor(getColor(R.color.np_primary));
         searchField.setHintTextColor(getColor(R.color.np_secondary));
         searchField.setBackgroundColor(Color.TRANSPARENT);
-        searchBar.addView(searchField, new LinearLayout.LayoutParams(0, dp(64), 1));
+        searchBar.addView(searchField, new LinearLayout.LayoutParams(0, dp(56), 1));
         ImageButton clear = iconButton(R.drawable.ic_close, "Clear search");
+        clear.setPadding(dp(12), dp(12), dp(12), dp(12));
+        clear.setVisibility(View.INVISIBLE);
         clear.setOnClickListener(view -> searchField.setText(""));
-        searchBar.addView(clear, new LinearLayout.LayoutParams(dp(56), dp(56)));
+        searchBar.addView(clear, new LinearLayout.LayoutParams(dp(48), dp(48)));
         LinearLayout.LayoutParams searchBarParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(72));
-        searchBarParams.setMargins(dp(16), dp(8), dp(16), 0);
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(68));
         page.addView(searchBar, searchBarParams);
 
         LinearLayout filters = new LinearLayout(this);
         filters.setGravity(Gravity.CENTER_VERTICAL);
-        filters.setPadding(dp(24), dp(10), dp(24), dp(10));
+        filters.setPadding(dp(24), dp(16), dp(24), dp(16));
+        filters.setBackgroundColor(getColor(R.color.np_background));
         dayFilterButton = flatButton("Day ▾");
         timeFilterButton = flatButton("Time ▾");
         dayFilterButton.setOnClickListener(this::showDayFilter);
         timeFilterButton.setOnClickListener(this::showTimeFilter);
-        filters.addView(dayFilterButton, new LinearLayout.LayoutParams(dp(116), dp(52)));
-        LinearLayout.LayoutParams timeParams = new LinearLayout.LayoutParams(dp(116), dp(52));
-        timeParams.setMarginStart(dp(10));
+        filters.addView(dayFilterButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(36)));
+        LinearLayout.LayoutParams timeParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(36));
+        timeParams.setMarginStart(dp(12));
         filters.addView(timeFilterButton, timeParams);
         page.addView(filters, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(72)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(68)));
 
         FrameLayout content = new FrameLayout(this);
+        content.setBackgroundColor(getColor(R.color.np_background));
         ListView list = new ListView(this);
         list.setDivider(null);
         list.setSelector(android.R.color.transparent);
@@ -192,7 +202,7 @@ public final class MainActivity extends Activity {
         list.setPadding(0, 0, 0, dp(112));
         historyAdapter = new HistoryAdapter(this,
                 database.query("", timeFilter, dayFilter, specificDay,
-                        fromTime, toTime, false), this::showSongMenu);
+                        fromTime, toTime, false), false, this::showSongMenu);
         list.setAdapter(historyAdapter);
         content.addView(list, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -203,7 +213,10 @@ public final class MainActivity extends Activity {
 
         searchField.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { refresh(); }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                clear.setVisibility(s.length() == 0 ? View.INVISIBLE : View.VISIBLE);
+                refresh();
+            }
             @Override public void afterTextChanged(Editable s) {}
         });
         searchField.requestFocus();
@@ -214,7 +227,7 @@ public final class MainActivity extends Activity {
     private LinearLayout toolbar(String title, boolean showBack) {
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER_VERTICAL);
-        bar.setPadding(dp(24), dp(8), dp(20), 0);
+        bar.setPadding(dp(24), dp(4), dp(20), 0);
         if (showBack) {
             ImageButton back = iconButton(R.drawable.ic_arrow_back, "Navigate up");
             back.setOnClickListener(view -> showHistory(false));
@@ -223,17 +236,18 @@ public final class MainActivity extends Activity {
         TextView heading = new TextView(this);
         heading.setText(title);
         heading.setTextColor(getColor(R.color.np_primary));
-        heading.setTextSize(32);
+        heading.setTextSize(24);
         heading.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         heading.setGravity(Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(68), 1);
+        LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(58), 1);
         if (showBack) headingParams.setMarginStart(dp(8));
         bar.addView(heading, headingParams);
         if (!showBack) {
             ImageButton settings = iconButton(R.drawable.ic_settings, "Settings");
+            settings.setPadding(dp(7), dp(7), dp(7), dp(7));
             settings.setBackgroundResource(R.drawable.rounded_surface);
             settings.setOnClickListener(view -> showSettings());
-            bar.addView(settings, new LinearLayout.LayoutParams(dp(60), dp(60)));
+            bar.addView(settings, new LinearLayout.LayoutParams(dp(40), dp(40)));
         }
         return bar;
     }
@@ -241,22 +255,23 @@ public final class MainActivity extends Activity {
     private View bottomNavigation(int selected) {
         LinearLayout nav = new LinearLayout(this);
         nav.setGravity(Gravity.CENTER);
-        nav.setPadding(dp(8), dp(6), dp(8), dp(6));
+        nav.setPadding(dp(8), dp(4), dp(8), dp(4));
         nav.setBackgroundResource(R.drawable.rounded_surface);
         int[] icons = {R.drawable.ic_history, R.drawable.ic_favorite};
         String[] labels = {"History", "Favorites"};
         for (int i = 0; i < icons.length; i++) {
             ImageButton button = iconButton(icons[i], labels[i]);
+            button.setPadding(dp(12), dp(10), dp(12), dp(10));
             boolean isSelected = i == selected;
             if (isSelected) button.setBackgroundResource(R.drawable.rounded_selected);
             button.setColorFilter(getColor(isSelected
                     ? R.color.np_on_nav_selected : R.color.np_secondary));
             final int tab = i;
             button.setOnClickListener(view -> showHistory(tab == 1));
-            nav.addView(button, new LinearLayout.LayoutParams(dp(68), dp(56)));
+            nav.addView(button, new LinearLayout.LayoutParams(dp(52), dp(48)));
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                dp(152), dp(68), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+                dp(120), dp(56), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         params.bottomMargin = dp(20);
         nav.setLayoutParams(params);
         return nav;
@@ -295,11 +310,11 @@ public final class MainActivity extends Activity {
 
     private void showDayFilter(View anchor) {
         String[] options = {"Last day", "Last 7 days", "Last 30 days", "Specific day"};
-        showFilterPopup(anchor, options, dayFilter, option -> {
+        showFilterPopup(anchor, options, dayFilter, 3, option -> {
             if (option.equals(dayFilter)) {
                 dayFilter = "Any day";
                 specificDay = "";
-                dayFilterButton.setText("Day ▾");
+                updateFilterButton(dayFilterButton, "Day", false);
                 refresh();
                 return;
             }
@@ -310,15 +325,15 @@ public final class MainActivity extends Activity {
                     LocalDate selected = LocalDate.of(year, month + 1, day);
                     dayFilter = "Specific day";
                     specificDay = selected.toString();
-                    dayFilterButton.setText(selected.format(
-                            DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())) + " ▾");
+                    updateFilterButton(dayFilterButton, selected.format(
+                            DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())), true);
                     refresh();
                 }, initial.getYear(), initial.getMonthValue() - 1,
                         initial.getDayOfMonth()).show();
             } else {
                 dayFilter = option;
                 specificDay = "";
-                dayFilterButton.setText(option + " ▾");
+                updateFilterButton(dayFilterButton, option, true);
                 refresh();
             }
         });
@@ -329,7 +344,7 @@ public final class MainActivity extends Activity {
         String toLabel = toTime.isEmpty() ? "To" : "To  " + toTime;
         String[] options = {"Morning", "Afternoon", "Evening", "Night time",
                 "Specific time", fromLabel, toLabel};
-        showFilterPopup(anchor, options, timeFilter, option -> {
+        showFilterPopup(anchor, options, timeFilter, 4, option -> {
             if (option.startsWith("From")) {
                 pickSpecificTime(true);
             } else if (option.startsWith("To")) {
@@ -349,7 +364,7 @@ public final class MainActivity extends Activity {
                 timeFilter = option;
                 fromTime = "";
                 toTime = "";
-                timeFilterButton.setText(option + " ▾");
+                updateFilterButton(timeFilterButton, option, true);
                 refresh();
             }
         });
@@ -359,7 +374,7 @@ public final class MainActivity extends Activity {
         timeFilter = "Any time";
         fromTime = "";
         toTime = "";
-        timeFilterButton.setText("Time ▾");
+        updateFilterButton(timeFilterButton, "Time", false);
         refresh();
     }
 
@@ -376,28 +391,50 @@ public final class MainActivity extends Activity {
             if (!fromTime.isEmpty() && !toTime.isEmpty()) label = fromTime + "–" + toTime;
             else if (!fromTime.isEmpty()) label = "From " + fromTime;
             else label = "To " + toTime;
-            timeFilterButton.setText(label + " ▾");
+            updateFilterButton(timeFilterButton, label, true);
             refresh();
         }, initial.getHour(), initial.getMinute(), true).show();
     }
 
     private void showFilterPopup(View anchor, String[] options, String selected,
-                                 Consumer<String> listener) {
+                                 int separatorIndex, Consumer<String> listener) {
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.VERTICAL);
-        menu.setPadding(dp(8), dp(8), dp(8), dp(8));
-        menu.setBackgroundResource(R.drawable.rounded_filter_popup);
-        PopupWindow popup = new PopupWindow(menu, dp(252),
+        LinearLayout group = filterGroup();
+        menu.addView(group, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        PopupWindow popup = new PopupWindow(menu, dp(216),
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        for (String option : options) {
+        for (int i = 0; i < options.length; i++) {
+            String option = options[i];
+            if (i == separatorIndex) {
+                View separator = new View(this);
+                menu.addView(separator, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, dp(4)));
+                group = filterGroup();
+                menu.addView(group, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
             LinearLayout row = new LinearLayout(this);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(dp(22), 0, dp(16), 0);
+            row.setPadding(dp(16), 0, dp(17), 0);
             boolean checked = option.equals(selected);
             if (checked) row.setBackgroundResource(R.drawable.rounded_filter_selected);
 
+            if ("Specific day".equals(option)) {
+                ImageView calendar = new ImageView(this);
+                calendar.setImageResource(R.drawable.ic_calendar);
+                calendar.setColorFilter(getColor(R.color.np_popup_text));
+                LinearLayout.LayoutParams calendarParams =
+                        new LinearLayout.LayoutParams(dp(22), dp(22));
+                calendarParams.setMarginEnd(dp(19));
+                row.addView(calendar, calendarParams);
+            }
+
             TextView label = bodyText(option);
-            label.setTextSize(18);
+            label.setTextSize(16);
+            label.setTextColor(getColor(R.color.np_popup_text));
             label.setGravity(Gravity.CENTER_VERTICAL);
             row.addView(label, new LinearLayout.LayoutParams(0,
                     ViewGroup.LayoutParams.MATCH_PARENT, 1));
@@ -406,19 +443,27 @@ public final class MainActivity extends Activity {
                 check.setImageResource(R.drawable.ic_check);
                 check.setColorFilter(getColor(R.color.np_primary));
                 check.setContentDescription("Selected");
-                row.addView(check, new LinearLayout.LayoutParams(dp(28), dp(28)));
+                row.addView(check, new LinearLayout.LayoutParams(dp(24), dp(24)));
             }
             row.setOnClickListener(view -> {
                 popup.dismiss();
                 listener.accept(option);
             });
-            menu.addView(row, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+            group.addView(row, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
         }
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setOutsideTouchable(true);
         popup.setElevation(dp(8));
         popup.showAsDropDown(anchor, 0, dp(4));
+    }
+
+    private LinearLayout filterGroup() {
+        LinearLayout group = new LinearLayout(this);
+        group.setOrientation(LinearLayout.VERTICAL);
+        group.setPadding(0, dp(4), 0, dp(4));
+        group.setBackgroundResource(R.drawable.rounded_filter_popup);
+        return group;
     }
 
     private void refresh() {
@@ -591,11 +636,22 @@ public final class MainActivity extends Activity {
     private Button flatButton(String text) {
         Button button = new Button(this);
         button.setText(text);
-        button.setTextSize(13);
+        button.setTextSize(16);
         button.setTextColor(getColor(R.color.np_primary));
         button.setAllCaps(false);
-        button.setBackgroundResource(R.drawable.rounded_surface);
+        button.setMinWidth(dp(84));
+        button.setMinimumWidth(dp(84));
+        button.setMinHeight(0);
+        button.setMinimumHeight(0);
+        button.setPadding(dp(14), 0, dp(14), 0);
+        button.setBackgroundResource(R.drawable.filter_button_outline);
         return button;
+    }
+
+    private void updateFilterButton(Button button, String label, boolean active) {
+        button.setText(label + " ▾");
+        button.setBackgroundResource(active
+                ? R.drawable.filter_button_active : R.drawable.filter_button_outline);
     }
 
     private TextView bodyText(String text) {

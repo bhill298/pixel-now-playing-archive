@@ -30,16 +30,24 @@ final class HistoryAdapter extends BaseAdapter {
 
     private final Context context;
     private final SongMenuListener listener;
+    private final boolean groupByDate;
     private final List<Object> rows = new ArrayList<>();
 
-    HistoryAdapter(Context context, List<Song> songs, SongMenuListener listener) {
+    HistoryAdapter(Context context, List<Song> songs, boolean groupByDate,
+                   SongMenuListener listener) {
         this.context = context;
+        this.groupByDate = groupByDate;
         this.listener = listener;
         setSongs(songs);
     }
 
     void setSongs(List<Song> songs) {
         rows.clear();
+        if (!groupByDate) {
+            rows.addAll(songs);
+            notifyDataSetChanged();
+            return;
+        }
         LocalDate previous = null;
         for (Song song : songs) {
             LocalDate date = parseDate(song.recognizedAt);
@@ -78,8 +86,10 @@ final class HistoryAdapter extends BaseAdapter {
         }
         holder = (SongHolder) convertView.getTag();
         holder.title.setText(song.title);
+        String when = groupByDate ? song.time
+                : formatSearchTimestamp(song.recognizedAt, song.time);
         String subtitle = song.artist == null || song.artist.isEmpty()
-                ? song.time : song.artist + " • " + song.time;
+                ? when : song.artist + " • " + when;
         holder.subtitle.setText(subtitle);
         holder.menu.setContentDescription(song.title + ". Media overflow button");
         holder.menu.setOnClickListener(view -> listener.onMenu(view, song));
@@ -89,12 +99,12 @@ final class HistoryAdapter extends BaseAdapter {
     private TextView makeHeader() {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_secondary));
-        view.setTextSize(20);
+        view.setTextSize(18);
         view.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         view.setGravity(Gravity.BOTTOM);
         view.setPadding(dp(24), dp(8), dp(20), dp(10));
         view.setLayoutParams(new android.widget.AbsListView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(64)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(60)));
         return view;
     }
 
@@ -111,38 +121,38 @@ final class HistoryAdapter extends BaseAdapter {
         ImageView art = new ImageView(context);
         art.setImageResource(R.drawable.ic_album_note);
         art.setContentDescription("Placeholder album art");
-        art.setPadding(dp(12), dp(12), dp(12), dp(12));
+        art.setPadding(dp(11), dp(11), dp(11), dp(11));
         artFrame.addView(art, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        row.addView(artFrame, new LinearLayout.LayoutParams(dp(60), dp(60)));
+        row.addView(artFrame, new LinearLayout.LayoutParams(dp(56), dp(56)));
 
         LinearLayout labels = new LinearLayout(context);
         labels.setOrientation(LinearLayout.VERTICAL);
         labels.setGravity(Gravity.CENTER_VERTICAL);
-        labels.setPadding(dp(14), 0, dp(6), 0);
+        labels.setPadding(dp(16), 0, dp(6), 0);
         TextView title = new TextView(context);
         title.setTextColor(context.getColor(R.color.np_primary));
-        title.setTextSize(18);
+        title.setTextSize(16);
         title.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         TextView subtitle = new TextView(context);
         subtitle.setTextColor(context.getColor(R.color.np_secondary));
-        subtitle.setTextSize(16);
+        subtitle.setTextSize(15);
         subtitle.setSingleLine(true);
         subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
         labels.addView(title, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(28)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(25)));
         labels.addView(subtitle, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(26)));
-        row.addView(labels, new LinearLayout.LayoutParams(0, dp(60), 1));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(24)));
+        row.addView(labels, new LinearLayout.LayoutParams(0, dp(56), 1));
 
         ImageButton menu = new ImageButton(context);
         menu.setImageResource(R.drawable.ic_more_vert);
         menu.setScaleType(ImageView.ScaleType.CENTER);
-        menu.setPadding(dp(13), dp(13), dp(13), dp(13));
+        menu.setPadding(dp(8), dp(8), dp(8), dp(8));
         menu.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-        row.addView(menu, new LinearLayout.LayoutParams(dp(48), dp(56)));
+        row.addView(menu, new LinearLayout.LayoutParams(dp(44), dp(48)));
 
         row.setTag(new SongHolder(title, subtitle, menu));
         return row;
@@ -155,6 +165,22 @@ final class HistoryAdapter extends BaseAdapter {
         String pattern = date.getYear() == today.getYear()
                 ? "EEEE, MMMM d" : "EEEE, MMMM d, yyyy";
         return date.format(DateTimeFormatter.ofPattern(pattern, Locale.getDefault()));
+    }
+
+    private String formatSearchTimestamp(String recognizedAt, String time) {
+        LocalDate date = parseDate(recognizedAt);
+        if (date == null) return time;
+        LocalDate today = LocalDate.now();
+        String day;
+        if (date.equals(today)) day = "Today";
+        else if (date.equals(today.minusDays(1))) day = "Yesterday";
+        else if (date.getYear() == today.getYear()) {
+            day = date.format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault()));
+        } else {
+            day = date.format(DateTimeFormatter.ofPattern(
+                    "MMM d, yyyy", Locale.getDefault()));
+        }
+        return day + ", " + time;
     }
 
     private LocalDate parseDate(String value) {

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="np_background">#FFF9F4</color>
-    <color name="np_surface">#F3EEE8</color>
+    <color name="np_background">#F6F3F4</color>
+    <color name="np_surface">#EAE7EA</color>
     <color name="np_surface_selected">#D7D3C8</color>
     <color name="np_nav_selected">#616676</color>
     <color name="np_on_nav_selected">#F7F6FC</color>
-    <color name="np_filter_selected">#E1E2EA</color>
+    <color name="np_filter_selected">#E2E2E9</color>
+    <color name="np_popup_surface">#FCF8F9</color>
+    <color name="np_popup_text">#5F5C65</color>
     <color name="np_primary">#33332F</color>
     <color name="np_secondary">#706E67</color>
     <color name="np_accent">#68685A</color>

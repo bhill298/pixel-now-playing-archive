@@ -5,7 +5,7 @@ Playing history, rebuild the personal archive app, install it, and import the
 history on another phone. It does not depend on the original Google APK or on
 files elsewhere in the old workspace.
 
-The included app is **Now Playing Archive 1.3** (`com.brennan.nowplayingarchive`).
+The included app is **Now Playing Archive 1.4** (`com.brennan.nowplayingarchive`).
 It stores imported history locally, merges multiple exports without duplicates,
 supports favorites/search/day/time filters, and can export its combined database.
 
@@ -21,7 +21,7 @@ supports favorites/search/day/time filters, and can export its combined database
 - `install.ps1` — installs the APK and optionally copies the newest JSON export.
 - `signing/` and `keystore.properties` — the release signing key and credentials.
 - `archive/` — the completed Pixel 7 JSON/CSV export supplied with this kit.
-- `releases/` — the already-built signed 1.3 APK.
+- `releases/` — the already-built signed 1.4 APK.
 - `screenshots/` — on-device UI verification captures for this release.
 - `CHECKSUMS.sha256` — hashes for the APK, archive, exporter, and signing files.
 
@@ -44,7 +44,7 @@ Attach and authorize the destination Pixel, then run:
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
 .\install.ps1 -Serial YOUR_DESTINATION_SERIAL `
-    -Apk .\releases\NowPlayingArchive-v1.3-release.apk `
+    -Apk .\releases\NowPlayingArchive-v1.4-release.apk `
     -Json .\archive\pixel7-now-playing-export.json
 ```
 
@@ -189,7 +189,7 @@ file does not create duplicates, and a favorite flag can upgrade an existing row
 
 ## Verification
 
-The bundled 1.3 release was built with R8 optimization, signed with the included
+The bundled 1.4 release was built with R8 optimization, signed with the included
 keystore, passed Android lint, and was installed as an in-place update on Android
 17. Its filter behavior was verified on-device: day and time selections remain
 independently active, the selected menu item is checked, and selecting it again
