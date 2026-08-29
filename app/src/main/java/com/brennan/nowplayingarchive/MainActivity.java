@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -246,7 +247,10 @@ public final class MainActivity extends Activity {
         String[] labels = {"History", "Favorites"};
         for (int i = 0; i < icons.length; i++) {
             ImageButton button = iconButton(icons[i], labels[i]);
-            if (i == selected) button.setBackgroundResource(R.drawable.rounded_selected);
+            boolean isSelected = i == selected;
+            if (isSelected) button.setBackgroundResource(R.drawable.rounded_selected);
+            button.setColorFilter(getColor(isSelected
+                    ? R.color.np_on_nav_selected : R.color.np_secondary));
             final int tab = i;
             button.setOnClickListener(view -> showHistory(tab == 1));
             nav.addView(button, new LinearLayout.LayoutParams(dp(68), dp(56)));
@@ -291,7 +295,14 @@ public final class MainActivity extends Activity {
 
     private void showDayFilter(View anchor) {
         String[] options = {"Last day", "Last 7 days", "Last 30 days", "Specific day"};
-        showFilterPopup(anchor, options, option -> {
+        showFilterPopup(anchor, options, dayFilter, option -> {
+            if (option.equals(dayFilter)) {
+                dayFilter = "Any day";
+                specificDay = "";
+                dayFilterButton.setText("Day ▾");
+                refresh();
+                return;
+            }
             if ("Specific day".equals(option)) {
                 LocalDate initial = specificDay.isEmpty()
                         ? LocalDate.now() : LocalDate.parse(specificDay);
@@ -318,15 +329,23 @@ public final class MainActivity extends Activity {
         String toLabel = toTime.isEmpty() ? "To" : "To  " + toTime;
         String[] options = {"Morning", "Afternoon", "Evening", "Night time",
                 "Specific time", fromLabel, toLabel};
-        showFilterPopup(anchor, options, option -> {
+        showFilterPopup(anchor, options, timeFilter, option -> {
             if (option.startsWith("From")) {
                 pickSpecificTime(true);
             } else if (option.startsWith("To")) {
                 pickSpecificTime(false);
             } else if ("Specific time".equals(option)) {
+                if ("Specific time".equals(timeFilter)) {
+                    clearTimeFilter();
+                    return;
+                }
                 timeFilter = "Specific time";
                 pickSpecificTime(true);
             } else {
+                if (option.equals(timeFilter)) {
+                    clearTimeFilter();
+                    return;
+                }
                 timeFilter = option;
                 fromTime = "";
                 toTime = "";
@@ -334,6 +353,14 @@ public final class MainActivity extends Activity {
                 refresh();
             }
         });
+    }
+
+    private void clearTimeFilter() {
+        timeFilter = "Any time";
+        fromTime = "";
+        toTime = "";
+        timeFilterButton.setText("Time ▾");
+        refresh();
     }
 
     private void pickSpecificTime(boolean from) {
@@ -354,7 +381,8 @@ public final class MainActivity extends Activity {
         }, initial.getHour(), initial.getMinute(), true).show();
     }
 
-    private void showFilterPopup(View anchor, String[] options, Consumer<String> listener) {
+    private void showFilterPopup(View anchor, String[] options, String selected,
+                                 Consumer<String> listener) {
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.VERTICAL);
         menu.setPadding(dp(8), dp(8), dp(8), dp(8));
@@ -362,10 +390,24 @@ public final class MainActivity extends Activity {
         PopupWindow popup = new PopupWindow(menu, dp(252),
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
         for (String option : options) {
-            TextView row = bodyText(option);
-            row.setTextSize(20);
+            LinearLayout row = new LinearLayout(this);
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(dp(22), 0, dp(16), 0);
+            boolean checked = option.equals(selected);
+            if (checked) row.setBackgroundResource(R.drawable.rounded_filter_selected);
+
+            TextView label = bodyText(option);
+            label.setTextSize(18);
+            label.setGravity(Gravity.CENTER_VERTICAL);
+            row.addView(label, new LinearLayout.LayoutParams(0,
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            if (checked) {
+                ImageView check = new ImageView(this);
+                check.setImageResource(R.drawable.ic_check);
+                check.setColorFilter(getColor(R.color.np_primary));
+                check.setContentDescription("Selected");
+                row.addView(check, new LinearLayout.LayoutParams(dp(28), dp(28)));
+            }
             row.setOnClickListener(view -> {
                 popup.dismiss();
                 listener.accept(option);

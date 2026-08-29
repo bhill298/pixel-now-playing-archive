@@ -1,5 +1,6 @@
 /.gradle/
 /app/build/
+/build/
 /.toolchain/
 /releases/NowPlayingArchive-debug.apk
 !/keystore.properties

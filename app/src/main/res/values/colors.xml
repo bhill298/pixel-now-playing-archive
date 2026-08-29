@@ -3,6 +3,9 @@
     <color name="np_background">#FFF9F4</color>
     <color name="np_surface">#F3EEE8</color>
     <color name="np_surface_selected">#D7D3C8</color>
+    <color name="np_nav_selected">#616676</color>
+    <color name="np_on_nav_selected">#F7F6FC</color>
+    <color name="np_filter_selected">#E1E2EA</color>
     <color name="np_primary">#33332F</color>
     <color name="np_secondary">#706E67</color>
     <color name="np_accent">#68685A</color>

@@ -89,12 +89,12 @@ final class HistoryAdapter extends BaseAdapter {
     private TextView makeHeader() {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_secondary));
-        view.setTextSize(22);
+        view.setTextSize(20);
         view.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         view.setGravity(Gravity.BOTTOM);
-        view.setPadding(dp(28), dp(10), dp(20), dp(12));
+        view.setPadding(dp(24), dp(8), dp(20), dp(10));
         view.setLayoutParams(new android.widget.AbsListView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(72)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(64)));
         return view;
     }
 
@@ -102,47 +102,47 @@ final class HistoryAdapter extends BaseAdapter {
         LinearLayout row = new LinearLayout(context);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(28), dp(7), dp(18), dp(7));
+        row.setPadding(dp(24), dp(5), dp(16), dp(5));
         row.setLayoutParams(new android.widget.AbsListView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(94)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(82)));
 
         FrameLayout artFrame = new FrameLayout(context);
         artFrame.setBackgroundResource(R.drawable.rounded_placeholder);
         ImageView art = new ImageView(context);
         art.setImageResource(R.drawable.ic_album_note);
         art.setContentDescription("Placeholder album art");
-        art.setPadding(dp(13), dp(13), dp(13), dp(13));
+        art.setPadding(dp(12), dp(12), dp(12), dp(12));
         artFrame.addView(art, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        row.addView(artFrame, new LinearLayout.LayoutParams(dp(66), dp(66)));
+        row.addView(artFrame, new LinearLayout.LayoutParams(dp(60), dp(60)));
 
         LinearLayout labels = new LinearLayout(context);
         labels.setOrientation(LinearLayout.VERTICAL);
         labels.setGravity(Gravity.CENTER_VERTICAL);
-        labels.setPadding(dp(18), 0, dp(8), 0);
+        labels.setPadding(dp(14), 0, dp(6), 0);
         TextView title = new TextView(context);
         title.setTextColor(context.getColor(R.color.np_primary));
-        title.setTextSize(20);
+        title.setTextSize(18);
         title.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         TextView subtitle = new TextView(context);
         subtitle.setTextColor(context.getColor(R.color.np_secondary));
-        subtitle.setTextSize(18);
+        subtitle.setTextSize(16);
         subtitle.setSingleLine(true);
         subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
         labels.addView(title, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(32)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(28)));
         labels.addView(subtitle, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(30)));
-        row.addView(labels, new LinearLayout.LayoutParams(0, dp(70), 1));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(26)));
+        row.addView(labels, new LinearLayout.LayoutParams(0, dp(60), 1));
 
         ImageButton menu = new ImageButton(context);
         menu.setImageResource(R.drawable.ic_more_vert);
         menu.setScaleType(ImageView.ScaleType.CENTER);
-        menu.setPadding(dp(14), dp(14), dp(14), dp(14));
+        menu.setPadding(dp(13), dp(13), dp(13), dp(13));
         menu.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-        row.addView(menu, new LinearLayout.LayoutParams(dp(52), dp(64)));
+        row.addView(menu, new LinearLayout.LayoutParams(dp(48), dp(56)));
 
         row.setTag(new SongHolder(title, subtitle, menu));
         return row;
