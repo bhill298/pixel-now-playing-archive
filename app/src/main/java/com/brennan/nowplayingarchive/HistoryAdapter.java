@@ -100,7 +100,7 @@ final class HistoryAdapter extends BaseAdapter {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_secondary));
         view.setTextSize(18);
-        view.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        view.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         view.setGravity(Gravity.BOTTOM);
         view.setPadding(dp(24), dp(8), dp(20), dp(10));
         view.setLayoutParams(new android.widget.AbsListView.LayoutParams(
@@ -133,12 +133,13 @@ final class HistoryAdapter extends BaseAdapter {
         TextView title = new TextView(context);
         title.setTextColor(context.getColor(R.color.np_primary));
         title.setTextSize(16);
-        title.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        title.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         TextView subtitle = new TextView(context);
         subtitle.setTextColor(context.getColor(R.color.np_secondary));
         subtitle.setTextSize(15);
+        subtitle.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         subtitle.setSingleLine(true);
         subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
         labels.addView(title, new LinearLayout.LayoutParams(

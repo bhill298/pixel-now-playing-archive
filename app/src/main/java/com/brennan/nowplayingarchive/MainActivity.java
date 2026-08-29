@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.window.OnBackInvokedDispatcher;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -84,32 +85,7 @@ public final class MainActivity extends Activity {
         fromTime = "";
         toTime = "";
         LinearLayout page = basePage();
-        page.addView(toolbar(favorites ? "Favorites" : "History", false));
-
-        if (!favorites) {
-            LinearLayout searchRow = new LinearLayout(this);
-            searchRow.setGravity(Gravity.CENTER_VERTICAL);
-            searchRow.setPadding(dp(24), dp(8), dp(24), dp(8));
-            searchField = new EditText(this);
-            searchField.setHint("Search history");
-            searchField.setTextSize(18);
-            searchField.setSingleLine(true);
-            searchField.setTextColor(getColor(R.color.np_primary));
-            searchField.setHintTextColor(getColor(R.color.np_secondary));
-            searchField.setBackgroundResource(R.drawable.rounded_surface);
-            searchField.setPadding(dp(16), 0, dp(16), 0);
-            searchField.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_search, 0, 0, 0);
-            searchField.setCompoundDrawablePadding(dp(12));
-            searchField.setFocusable(false);
-            searchField.setOnClickListener(view -> showSearch());
-            searchRow.addView(searchField, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(56)));
-            page.addView(searchRow, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(72)));
-        } else {
-            searchField = null;
-        }
+        searchField = null;
 
         FrameLayout content = new FrameLayout(this);
         ListView list = new ListView(this);
@@ -117,11 +93,54 @@ public final class MainActivity extends Activity {
         list.setSelector(android.R.color.transparent);
         list.setClipToPadding(false);
         list.setPadding(0, 0, 0, dp(112));
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.VERTICAL);
+        header.addView(toolbar(favorites ? "Favorites" : "History", false),
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(62)));
+        if (!favorites) {
+            header.addView(historySearchRow(), new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(72)));
+        }
+        list.addHeaderView(header, null, false);
         List<Song> songs = database.query("", timeFilter, favoritesOnly);
         historyAdapter = new HistoryAdapter(this, songs, true, this::showSongMenu);
         list.setAdapter(historyAdapter);
         content.addView(list, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        if (!favorites) {
+            LinearLayout floatingSearch = historySearchRow();
+            floatingSearch.setBackgroundColor(getColor(R.color.np_background));
+            floatingSearch.setVisibility(View.GONE);
+            FrameLayout.LayoutParams floatingParams = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(72), Gravity.TOP);
+            content.addView(floatingSearch, floatingParams);
+            list.setOnScrollListener(new AbsListView.OnScrollListener() {
+                private int previousFirst;
+                private int previousTop;
+
+                @Override public void onScrollStateChanged(AbsListView view, int state) {}
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem,
+                                     int visibleItemCount, int totalItemCount) {
+                    View first = view.getChildAt(0);
+                    int top = first == null ? 0 : first.getTop();
+                    boolean atAbsoluteTop = firstVisibleItem == 0 && top >= 0;
+                    boolean scrollingUp = firstVisibleItem < previousFirst
+                            || (firstVisibleItem == previousFirst && top > previousTop);
+                    boolean scrollingDown = firstVisibleItem > previousFirst
+                            || (firstVisibleItem == previousFirst && top < previousTop);
+                    if (atAbsoluteTop || scrollingDown) {
+                        floatingSearch.setVisibility(View.GONE);
+                    } else if (scrollingUp) {
+                        floatingSearch.setVisibility(View.VISIBLE);
+                    }
+                    previousFirst = firstVisibleItem;
+                    previousTop = top;
+                }
+            });
+        }
 
         if (songs.isEmpty()) {
             TextView empty = bodyText(favorites
@@ -162,6 +181,7 @@ public final class MainActivity extends Activity {
         searchField = new EditText(this);
         searchField.setHint("Search history");
         searchField.setTextSize(18);
+        searchField.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         searchField.setSingleLine(true);
         searchField.setTextColor(getColor(R.color.np_primary));
         searchField.setHintTextColor(getColor(R.color.np_secondary));
@@ -237,7 +257,7 @@ public final class MainActivity extends Activity {
         heading.setText(title);
         heading.setTextColor(getColor(R.color.np_primary));
         heading.setTextSize(24);
-        heading.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        heading.setTypeface(Typeface.create("google-sans", Typeface.NORMAL));
         heading.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(58), 1);
         if (showBack) headingParams.setMarginStart(dp(8));
@@ -247,7 +267,7 @@ public final class MainActivity extends Activity {
             settings.setPadding(dp(7), dp(7), dp(7), dp(7));
             settings.setBackgroundResource(R.drawable.rounded_surface);
             settings.setOnClickListener(view -> showSettings());
-            bar.addView(settings, new LinearLayout.LayoutParams(dp(40), dp(40)));
+            bar.addView(settings, new LinearLayout.LayoutParams(dp(38), dp(38)));
         }
         return bar;
     }
@@ -638,6 +658,7 @@ public final class MainActivity extends Activity {
         button.setText(text);
         button.setTextSize(16);
         button.setTextColor(getColor(R.color.np_primary));
+        button.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         button.setAllCaps(false);
         button.setMinWidth(dp(84));
         button.setMinimumWidth(dp(84));
@@ -659,7 +680,30 @@ public final class MainActivity extends Activity {
         view.setText(text);
         view.setTextColor(getColor(R.color.np_primary));
         view.setTextSize(18);
+        view.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         return view;
+    }
+
+    private LinearLayout historySearchRow() {
+        LinearLayout searchRow = new LinearLayout(this);
+        searchRow.setGravity(Gravity.CENTER_VERTICAL);
+        searchRow.setPadding(dp(24), dp(8), dp(24), dp(8));
+        EditText launcher = new EditText(this);
+        launcher.setHint("Search history");
+        launcher.setTextSize(18);
+        launcher.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        launcher.setSingleLine(true);
+        launcher.setTextColor(getColor(R.color.np_primary));
+        launcher.setHintTextColor(getColor(R.color.np_secondary));
+        launcher.setBackgroundResource(R.drawable.rounded_surface);
+        launcher.setPadding(dp(16), 0, dp(16), 0);
+        launcher.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
+        launcher.setCompoundDrawablePadding(dp(12));
+        launcher.setFocusable(false);
+        launcher.setOnClickListener(view -> showSearch());
+        searchRow.addView(launcher, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(56)));
+        return searchRow;
     }
 
     private int dp(int value) {
