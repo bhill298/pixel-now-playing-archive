@@ -1,0 +1,6 @@
+/.gradle/
+/app/build/
+/.toolchain/
+/releases/NowPlayingArchive-debug.apk
+!/keystore.properties
+!/signing/now-playing-archive-release.jks

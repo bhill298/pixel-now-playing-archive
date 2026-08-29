@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="np_background">#FFF9F4</color>
+    <color name="np_surface">#F3EEE8</color>
+    <color name="np_surface_selected">#D7D3C8</color>
+    <color name="np_primary">#33332F</color>
+    <color name="np_secondary">#706E67</color>
+    <color name="np_accent">#68685A</color>
+    <color name="np_danger">#B3261E</color>
+    <color name="np_placeholder">#E4DED6</color>
+    <color name="launcher_background">#E8F0FE</color>
+</resources>
