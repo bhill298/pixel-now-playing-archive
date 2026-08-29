@@ -111,13 +111,16 @@ public final class MainActivity extends Activity {
         if (!favorites) {
             LinearLayout floatingSearch = historySearchRow();
             floatingSearch.setBackgroundColor(getColor(R.color.np_background));
-            floatingSearch.setVisibility(View.GONE);
+            floatingSearch.setTranslationY(-dp(72));
+            floatingSearch.setElevation(dp(4));
             FrameLayout.LayoutParams floatingParams = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(72), Gravity.TOP);
             content.addView(floatingSearch, floatingParams);
             list.setOnScrollListener(new AbsListView.OnScrollListener() {
                 private int previousFirst;
                 private int previousTop;
+                private int previousHeight;
+                private boolean initialized;
 
                 @Override public void onScrollStateChanged(AbsListView view, int state) {}
 
@@ -126,18 +129,33 @@ public final class MainActivity extends Activity {
                                      int visibleItemCount, int totalItemCount) {
                     View first = view.getChildAt(0);
                     int top = first == null ? 0 : first.getTop();
-                    boolean atAbsoluteTop = firstVisibleItem == 0 && top >= 0;
-                    boolean scrollingUp = firstVisibleItem < previousFirst
-                            || (firstVisibleItem == previousFirst && top > previousTop);
-                    boolean scrollingDown = firstVisibleItem > previousFirst
-                            || (firstVisibleItem == previousFirst && top < previousTop);
-                    if (atAbsoluteTop || scrollingDown) {
-                        floatingSearch.setVisibility(View.GONE);
-                    } else if (scrollingUp) {
-                        floatingSearch.setVisibility(View.VISIBLE);
+                    int height = first == null ? dp(82) : first.getHeight();
+                    if (!initialized) {
+                        initialized = true;
+                    } else {
+                        int delta;
+                        if (firstVisibleItem == previousFirst) {
+                            delta = previousTop - top;
+                        } else if (firstVisibleItem == previousFirst + 1) {
+                            delta = previousHeight + previousTop - top;
+                        } else if (firstVisibleItem == previousFirst - 1) {
+                            delta = previousTop - top - height;
+                        } else {
+                            delta = (firstVisibleItem - previousFirst) * dp(82)
+                                    + previousTop - top;
+                        }
+                        float next = floatingSearch.getTranslationY() - delta;
+                        floatingSearch.setTranslationY(Math.max(-dp(72), Math.min(0, next)));
+                    }
+
+                    // Once the real header search is fully back at the top, it replaces
+                    // the floating copy at the same position without a visible handoff.
+                    if (firstVisibleItem == 0 && top >= -dp(62)) {
+                        floatingSearch.setTranslationY(-dp(72));
                     }
                     previousFirst = firstVisibleItem;
                     previousTop = top;
+                    previousHeight = height;
                 }
             });
         }

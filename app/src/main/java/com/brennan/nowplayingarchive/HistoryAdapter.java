@@ -3,6 +3,7 @@ package com.brennan.nowplayingarchive;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,7 +134,13 @@ final class HistoryAdapter extends BaseAdapter {
         TextView title = new TextView(context);
         title.setTextColor(context.getColor(R.color.np_primary));
         title.setTextSize(16);
-        title.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        Typeface songTitle = Typeface.create("google-sans-text", Typeface.NORMAL);
+        if (Build.VERSION.SDK_INT >= 28) {
+            songTitle = Typeface.create(songTitle, 500, false);
+        } else {
+            songTitle = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+        }
+        title.setTypeface(songTitle);
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         TextView subtitle = new TextView(context);
