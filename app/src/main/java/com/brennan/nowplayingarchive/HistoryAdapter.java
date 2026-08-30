@@ -100,7 +100,7 @@ final class HistoryAdapter extends BaseAdapter {
     private TextView makeHeader() {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_date_header));
-        view.setTextSize(16);
+        view.setTextSize(13.5f);
         Typeface dateHeader = Typeface.create("google-sans-text", Typeface.NORMAL);
         if (Build.VERSION.SDK_INT >= 28) {
             dateHeader = Typeface.create(dateHeader, 500, false);
