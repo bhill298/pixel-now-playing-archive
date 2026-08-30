@@ -2,7 +2,7 @@
 
 This source repository contains two related tools:
 
-- **Now Playing Archive 1.17**, an offline Android app that imports, merges,
+- **Now Playing Archive**, an offline Android app that imports, merges,
   searches, filters, favorites, displays, and re-exports Pixel Now Playing
   history without modifying Google's private database.
 - A Python/ADB UI-automation exporter that scrolls the visible Now Playing
@@ -11,33 +11,15 @@ This source repository contains two related tools:
 The app has no network permission. Imported history stays in its private local
 database until you clear it or export it manually.
 
-## What is included
-
-- `app/` — complete Android application source and required runtime resources.
-- `setup-toolchain.ps1` — installs a pinned portable JDK, Gradle, Android SDK,
-  platform tools, and build tools under the ignored `.toolchain/` directory.
-- `setup-signing.ps1` — creates a local release key and Gradle signing
-  properties. `build.ps1` calls it automatically for release builds.
-- `build.ps1` — builds a debug or signed optimized release APK.
-- `install.ps1` — installs a built APK, optionally copies an export, and launches
-  the app.
-- `export_now_playing.py` and `export-history.ps1` — the exporter and its
-  PowerShell wrapper.
-- `archive/pixel7-now-playing-export.json` — an example of the accepted schema;
-  the CSV beside it is the corresponding human-readable export.
-
-Generated APKs, screenshots, toolchains, build directories, signing keys, and
-signing passwords are intentionally ignored and are not stored in Git.
-
-The only tracked binary-format source dependency is
-`app/src/main/res/font/google_sans_flex_variable.ttf`. It is the exact OFL font
-resource used to reproduce the Pixel typography and is required at build time;
-it is not a generated build artifact. Keeping it in the repository makes a
-fresh clone reproducible without depending on an unstable third-party download.
+This is necessary because without root, you cannot import / export the now
+playing history database from another phone. If you have root on both the
+src/dest phone, you can directly copy from the database (left as an exercise
+for the reader).
 
 ## Requirements
 
-- Windows 10 or later with PowerShell 5.1 or PowerShell 7.
+- Windows 10 or later with PowerShell (but scripts / tooling should be easy to
+  port)
 - Internet access for the first toolchain setup and Gradle dependency download.
 - Python 3.10 or later for history export; the exporter uses only the standard
   library.
@@ -61,54 +43,11 @@ The pinned toolchain consists of Microsoft OpenJDK 17.0.20.1, Gradle 9.4.1,
 Android Gradle Plugin 9.2.0, Android API 37, and Build Tools 36.0.0. Downloaded
 archives are checked against SHA-256 values embedded in `setup-toolchain.ps1`.
 
-Build outputs are local and ignored:
-
-```text
-app/build/outputs/apk/release/app-release.apk
-releases/NowPlayingArchive-release.apk
-```
-
-For a debug build:
-
-```powershell
-.\build.ps1 -Variant Debug
-```
-
-## Local signing key
-
-The first release build creates these ignored files:
-
-```text
-signing/now-playing-archive-release.jks
-keystore.properties
-```
-
-Back up both files together. Android only permits an in-place update when the new
-APK is signed by the same key. A fresh clone without that backup generates a new
-key and therefore requires uninstalling an existing differently signed build;
-uninstalling clears that installation's private database, so export it first.
-
-Never commit the key or `keystore.properties`.
-
-## What to preserve outside Git
-
-The repository is sufficient to create a fresh build and a new signing identity,
-but two kinds of local state are intentionally excluded from Git:
-
-- Back up `signing/now-playing-archive-release.jks` and `keystore.properties`
-  together if future APKs must update an already-installed copy without first
-  uninstalling it.
-- Back up newly generated `archive/now-playing-export-*.json` files wherever you
-  keep personal data. Timestamped exports are ignored to avoid accidentally
-  publishing listening history. The named Pixel 7 JSON/CSV archive already in
-  this repository is tracked intentionally.
-
-After a future clone, restore the two signing files to their original paths if
-available, run `setup-toolchain.ps1`, and then run `build.ps1`. If the signing
-backup is unavailable, the build script safely generates a new identity; that
-APK can still be installed after uninstalling a differently signed copy.
-
 ## Export all history from another Pixel
+
+Since, without root, you cannot export from the db directly, you'll have to
+extract the history from screen UI hierarchy dumps via adb. This can be done
+automatically with the export history script:
 
 1. Enable **Developer options → USB debugging** on the source Pixel.
 2. Connect it by USB and approve the debugging authorization prompt.
@@ -125,7 +64,7 @@ temporarily enables stay-awake over USB, scrolls with display-relative
 coordinates, checkpoints after every page, and restores the original stay-awake
 setting when finished. Do not touch or lock the phone during the scroll.
 
-By default it creates ignored, timestamped files under `archive/`:
+By default it creates files under `archive/`:
 
 ```text
 archive/now-playing-export-YYYYMMDD-HHMMSS.json
@@ -178,11 +117,3 @@ existing songs, and a later favorite flag can upgrade an existing entry.
 - UI assets recovered from the supplied Google APK are present for this personal
   project; review licensing before distributing the app.
 - The archive app uses placeholder album art and does not fetch data online.
-
-## Verification
-
-Version 1.17 was release-built with R8, passed Android release lint, and was
-installed on Android 17. Its dark-mode date headings render at the requested
-darker `#C8C6BD`. The snap-to-search behavior moves the list and search control
-together over 300 ms using the Pixel APK's emphasized-decelerate curve
-`(0.1, 0.7, 0.1, 1.0)` with per-frame offsets.
