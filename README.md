@@ -5,7 +5,7 @@ Playing history, rebuild the personal archive app, install it, and import the
 history on another phone. It does not depend on the original Google APK or on
 files elsewhere in the old workspace.
 
-The included app is **Now Playing Archive 1.15** (`com.brennan.nowplayingarchive`).
+The included app is **Now Playing Archive 1.16** (`com.brennan.nowplayingarchive`).
 It stores imported history locally, merges multiple exports without duplicates,
 supports favorites/search/day/time filters, and can export its combined database.
 
@@ -22,7 +22,7 @@ supports favorites/search/day/time filters, and can export its combined database
 - `signing/` and `keystore.properties` — the release signing key and credentials.
 - `archive/` — the completed Pixel 7 JSON/CSV export supplied with this kit.
 - `licenses/` — the official Google Sans Flex OFL and font README.
-- `releases/` — the already-built signed 1.15 APK.
+- `releases/` — the already-built signed 1.16 APK.
 - `screenshots/` — on-device UI verification captures for this release.
 - `CHECKSUMS.sha256` — hashes for the APK, archive, exporter, and signing files.
 
@@ -45,7 +45,7 @@ Attach and authorize the destination Pixel, then run:
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
 .\install.ps1 -Serial YOUR_DESTINATION_SERIAL `
-    -Apk .\releases\NowPlayingArchive-v1.15-release.apk `
+    -Apk .\releases\NowPlayingArchive-v1.16-release.apk `
     -Json .\archive\pixel7-now-playing-export.json
 ```
 
@@ -190,7 +190,7 @@ file does not create duplicates, and a favorite flag can upgrade an existing row
 
 ## Verification
 
-The bundled 1.15 release was built with R8 optimization, signed with the included
+The bundled 1.16 release was built with R8 optimization, signed with the included
 keystore, passed Android lint, and was installed as an in-place update on Android
 17. Its filter behavior was verified on-device: day and time selections remain
 independently active, the selected menu item is checked, and selecting it again
@@ -204,7 +204,9 @@ with the search control. Small opposite-direction movements therefore return the
 whole list to its previous resting state. The same midpoint behavior applies to
 the original search row while the list is still near its absolute top.
 The settle lasts 300 ms, matching the original APK's Material medium-2 motion
-duration instead of the earlier, noticeably faster 180 ms transition.
+duration instead of the earlier, noticeably faster 180 ms transition. It is
+rendered with per-frame list offsets and the original APK's emphasized-decelerate
+curve (`0.1, 0.7, 0.1, 1.0`) instead of `ListView`'s stepped position scroller.
 The History heading, date headers, and song titles use the same stronger visual
 hierarchy as the Pixel UI, while artist/time subtitles remain lighter. The search
 label and settings glyph are intentionally smaller, and the bottom navigation has
@@ -233,6 +235,8 @@ search view is `screenshots/v1.11-flex-search.png`. The current header capture i
 floating-search directions and the fully shown/hidden top-of-list endpoints in
 `screenshots/v1.14-list-snap.png`. The v1.15 endpoint recheck after applying the
 slower duration is `screenshots/v1.15-snap-endpoints.png`.
+The corresponding v1.16 per-frame endpoint check is
+`screenshots/v1.16-smooth-snap-endpoints.png`.
 
 Bundled APK SHA-256:
 

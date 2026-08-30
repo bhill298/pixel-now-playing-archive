@@ -1,6 +1,7 @@
 package com.brennan.nowplayingarchive;
 
 import android.annotation.SuppressLint;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -17,6 +18,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.PathInterpolator;
 import android.window.OnBackInvokedDispatcher;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -120,9 +122,18 @@ public final class MainActivity extends Activity {
                 private int previousTop;
                 private int previousHeight;
                 private boolean initialized;
+                private ValueAnimator snapAnimator;
+                private int appliedSnapDistance;
 
                 @Override
                 public void onScrollStateChanged(AbsListView view, int state) {
+                    if (state != SCROLL_STATE_IDLE) {
+                        if (snapAnimator != null && snapAnimator.isRunning()) {
+                            snapAnimator.cancel();
+                        }
+                        return;
+                    }
+
                     if (state == SCROLL_STATE_IDLE) {
                         View first = view.getChildAt(0);
                         if (first == null) return;
@@ -146,7 +157,17 @@ public final class MainActivity extends Activity {
                         }
 
                         if (Math.abs(distance) > 1) {
-                            view.smoothScrollBy(distance, 300);
+                            appliedSnapDistance = 0;
+                            snapAnimator = ValueAnimator.ofInt(0, distance);
+                            snapAnimator.setDuration(300);
+                            snapAnimator.setInterpolator(
+                                    new PathInterpolator(0.1f, 0.7f, 0.1f, 1f));
+                            snapAnimator.addUpdateListener(animation -> {
+                                int animatedDistance = (Integer) animation.getAnimatedValue();
+                                view.scrollListBy(animatedDistance - appliedSnapDistance);
+                                appliedSnapDistance = animatedDistance;
+                            });
+                            snapAnimator.start();
                         }
                     }
                 }
