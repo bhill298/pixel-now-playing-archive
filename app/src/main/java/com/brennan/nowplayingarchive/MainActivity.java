@@ -123,19 +123,31 @@ public final class MainActivity extends Activity {
 
                 @Override
                 public void onScrollStateChanged(AbsListView view, int state) {
-                    if (state == SCROLL_STATE_TOUCH_SCROLL) {
-                        floatingSearch.animate().cancel();
-                    } else if (state == SCROLL_STATE_IDLE) {
-                        float halfway = -dp(72) / 2f;
-                        float target = floatingSearch.getTranslationY() >= halfway
-                                ? 0 : -dp(72);
-                        floatingSearch.animate()
-                                .translationY(target)
-                                .setDuration(180)
-                                .setInterpolator(android.view.animation.AnimationUtils
-                                        .loadInterpolator(MainActivity.this,
-                                                android.R.interpolator.fast_out_slow_in))
-                                .start();
+                    if (state == SCROLL_STATE_IDLE) {
+                        View first = view.getChildAt(0);
+                        if (first == null) return;
+
+                        int distance;
+                        if (view.getFirstVisiblePosition() == 0) {
+                            int top = first.getTop();
+                            int searchShownTop = -dp(62);
+                            if (top >= searchShownTop) return;
+
+                            int searchHiddenTop = -dp(134);
+                            int halfway = (searchShownTop + searchHiddenTop) / 2;
+                            int targetTop = top >= halfway
+                                    ? searchShownTop : searchHiddenTop;
+                            distance = top - targetTop;
+                        } else {
+                            float halfway = -dp(72) / 2f;
+                            float target = floatingSearch.getTranslationY() >= halfway
+                                    ? 0 : -dp(72);
+                            distance = Math.round(floatingSearch.getTranslationY() - target);
+                        }
+
+                        if (Math.abs(distance) > 1) {
+                            view.smoothScrollBy(distance, 180);
+                        }
                     }
                 }
 
