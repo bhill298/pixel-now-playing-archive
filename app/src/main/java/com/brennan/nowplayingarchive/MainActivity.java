@@ -263,7 +263,7 @@ public final class MainActivity extends Activity {
     private LinearLayout toolbar(String title, boolean showBack) {
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER_VERTICAL);
-        bar.setPadding(dp(24), dp(4), dp(20), 0);
+        bar.setPadding(dp(28), dp(3), dp(24), 0);
         if (showBack) {
             ImageButton back = iconButton(R.drawable.ic_arrow_back, "Navigate up");
             back.setOnClickListener(view -> showHistory(false));
@@ -272,17 +272,17 @@ public final class MainActivity extends Activity {
         TextView heading = new TextView(this);
         heading.setText(title);
         heading.setTextColor(getColor(R.color.np_primary));
-        PixelTypography.apply(heading, 24, 400, false);
+        PixelTypography.apply(heading, 22.5f, 500, true);
         heading.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(58), 1);
         if (showBack) headingParams.setMarginStart(dp(8));
         bar.addView(heading, headingParams);
         if (!showBack) {
             ImageButton settings = iconButton(R.drawable.ic_settings, "Settings");
-            settings.setPadding(dp(8), dp(8), dp(8), dp(8));
+            settings.setPadding(dp(10), dp(10), dp(10), dp(10));
             settings.setBackgroundResource(R.drawable.rounded_surface);
             settings.setOnClickListener(view -> showSettings());
-            bar.addView(settings, new LinearLayout.LayoutParams(dp(38), dp(38)));
+            bar.addView(settings, new LinearLayout.LayoutParams(dp(40), dp(40)));
         }
         return bar;
     }
