@@ -121,7 +121,23 @@ public final class MainActivity extends Activity {
                 private int previousHeight;
                 private boolean initialized;
 
-                @Override public void onScrollStateChanged(AbsListView view, int state) {}
+                @Override
+                public void onScrollStateChanged(AbsListView view, int state) {
+                    if (state == SCROLL_STATE_TOUCH_SCROLL) {
+                        floatingSearch.animate().cancel();
+                    } else if (state == SCROLL_STATE_IDLE) {
+                        float halfway = -dp(72) / 2f;
+                        float target = floatingSearch.getTranslationY() >= halfway
+                                ? 0 : -dp(72);
+                        floatingSearch.animate()
+                                .translationY(target)
+                                .setDuration(180)
+                                .setInterpolator(android.view.animation.AnimationUtils
+                                        .loadInterpolator(MainActivity.this,
+                                                android.R.interpolator.fast_out_slow_in))
+                                .start();
+                    }
+                }
 
                 @Override
                 public void onScroll(AbsListView view, int firstVisibleItem,
