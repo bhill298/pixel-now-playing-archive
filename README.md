@@ -34,6 +34,7 @@ git clone YOUR_REPOSITORY_URL pixel-now-playing-archive-kit
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
 .\build.ps1 -Variant Release
+# install apk only (can also do manually)
 .\install.ps1 -Serial YOUR_DESTINATION_SERIAL -SkipJsonCopy
 ```
 
@@ -96,7 +97,8 @@ app. CSV is supplementary and is not imported by the app.
 
 ## Copy and import an export
 
-Build the app, attach the destination phone, and run:
+You can copy the json over and install the apk manually, or attach the
+destination phone, and run:
 
 ```powershell
 .\install.ps1 `
