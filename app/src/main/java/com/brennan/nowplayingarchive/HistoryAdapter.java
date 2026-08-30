@@ -101,7 +101,13 @@ final class HistoryAdapter extends BaseAdapter {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_secondary));
         view.setTextSize(18);
-        view.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        Typeface dateHeader = Typeface.create("google-sans-text", Typeface.NORMAL);
+        if (Build.VERSION.SDK_INT >= 28) {
+            dateHeader = Typeface.create(dateHeader, 500, false);
+        } else {
+            dateHeader = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+        }
+        view.setTypeface(dateHeader);
         view.setGravity(Gravity.BOTTOM);
         view.setPadding(dp(24), dp(8), dp(20), dp(10));
         view.setLayoutParams(new android.widget.AbsListView.LayoutParams(
@@ -136,7 +142,7 @@ final class HistoryAdapter extends BaseAdapter {
         title.setTextSize(16);
         Typeface songTitle = Typeface.create("google-sans-text", Typeface.NORMAL);
         if (Build.VERSION.SDK_INT >= 28) {
-            songTitle = Typeface.create(songTitle, 500, false);
+            songTitle = Typeface.create(songTitle, 600, false);
         } else {
             songTitle = Typeface.create("sans-serif-medium", Typeface.NORMAL);
         }

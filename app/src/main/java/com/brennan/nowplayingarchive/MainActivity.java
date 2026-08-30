@@ -198,7 +198,7 @@ public final class MainActivity extends Activity {
 
         searchField = new EditText(this);
         searchField.setHint("Search history");
-        searchField.setTextSize(18);
+        searchField.setTextSize(17);
         searchField.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         searchField.setSingleLine(true);
         searchField.setTextColor(getColor(R.color.np_primary));
@@ -274,15 +274,21 @@ public final class MainActivity extends Activity {
         TextView heading = new TextView(this);
         heading.setText(title);
         heading.setTextColor(getColor(R.color.np_primary));
-        heading.setTextSize(24);
-        heading.setTypeface(Typeface.create("google-sans", Typeface.NORMAL));
+        heading.setTextSize(23);
+        Typeface headingTypeface = Typeface.create("google-sans", Typeface.NORMAL);
+        if (Build.VERSION.SDK_INT >= 28) {
+            headingTypeface = Typeface.create(headingTypeface, 500, false);
+        } else {
+            headingTypeface = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+        }
+        heading.setTypeface(headingTypeface);
         heading.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(58), 1);
         if (showBack) headingParams.setMarginStart(dp(8));
         bar.addView(heading, headingParams);
         if (!showBack) {
             ImageButton settings = iconButton(R.drawable.ic_settings, "Settings");
-            settings.setPadding(dp(7), dp(7), dp(7), dp(7));
+            settings.setPadding(dp(8), dp(8), dp(8), dp(8));
             settings.setBackgroundResource(R.drawable.rounded_surface);
             settings.setOnClickListener(view -> showSettings());
             bar.addView(settings, new LinearLayout.LayoutParams(dp(38), dp(38)));
@@ -293,24 +299,24 @@ public final class MainActivity extends Activity {
     private View bottomNavigation(int selected) {
         LinearLayout nav = new LinearLayout(this);
         nav.setGravity(Gravity.CENTER);
-        nav.setPadding(dp(8), dp(4), dp(8), dp(4));
+        nav.setPadding(dp(8), dp(6), dp(8), dp(6));
         nav.setBackgroundResource(R.drawable.rounded_surface);
         int[] icons = {R.drawable.ic_history, R.drawable.ic_favorite};
         String[] labels = {"History", "Favorites"};
         for (int i = 0; i < icons.length; i++) {
             ImageButton button = iconButton(icons[i], labels[i]);
-            button.setPadding(dp(12), dp(10), dp(12), dp(10));
+            button.setPadding(dp(14), dp(10), dp(14), dp(10));
             boolean isSelected = i == selected;
             if (isSelected) button.setBackgroundResource(R.drawable.rounded_selected);
             button.setColorFilter(getColor(isSelected
                     ? R.color.np_on_nav_selected : R.color.np_secondary));
             final int tab = i;
             button.setOnClickListener(view -> showHistory(tab == 1));
-            nav.addView(button, new LinearLayout.LayoutParams(dp(52), dp(48)));
+            nav.addView(button, new LinearLayout.LayoutParams(dp(52), dp(44)));
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 dp(120), dp(56), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-        params.bottomMargin = dp(20);
+        params.bottomMargin = dp(22);
         nav.setLayoutParams(params);
         return nav;
     }
@@ -708,7 +714,7 @@ public final class MainActivity extends Activity {
         searchRow.setPadding(dp(24), dp(8), dp(24), dp(8));
         EditText launcher = new EditText(this);
         launcher.setHint("Search history");
-        launcher.setTextSize(18);
+        launcher.setTextSize(17);
         launcher.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         launcher.setSingleLine(true);
         launcher.setTextColor(getColor(R.color.np_primary));
