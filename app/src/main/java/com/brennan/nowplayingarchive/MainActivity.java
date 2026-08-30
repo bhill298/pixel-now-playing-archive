@@ -146,7 +146,7 @@ public final class MainActivity extends Activity {
                         }
 
                         if (Math.abs(distance) > 1) {
-                            view.smoothScrollBy(distance, 180);
+                            view.smoothScrollBy(distance, 300);
                         }
                     }
                 }
