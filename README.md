@@ -39,7 +39,8 @@ fresh clone reproducible without depending on an unstable third-party download.
 
 - Windows 10 or later with PowerShell 5.1 or PowerShell 7.
 - Internet access for the first toolchain setup and Gradle dependency download.
-- Python 3 for history export; the exporter uses only the standard library.
+- Python 3.10 or later for history export; the exporter uses only the standard
+  library.
 - A Pixel with USB debugging enabled and this computer authorized for ADB.
 
 No system-wide Java, Gradle, or Android SDK installation is required.
@@ -88,6 +89,24 @@ key and therefore requires uninstalling an existing differently signed build;
 uninstalling clears that installation's private database, so export it first.
 
 Never commit the key or `keystore.properties`.
+
+## What to preserve outside Git
+
+The repository is sufficient to create a fresh build and a new signing identity,
+but two kinds of local state are intentionally excluded from Git:
+
+- Back up `signing/now-playing-archive-release.jks` and `keystore.properties`
+  together if future APKs must update an already-installed copy without first
+  uninstalling it.
+- Back up newly generated `archive/now-playing-export-*.json` files wherever you
+  keep personal data. Timestamped exports are ignored to avoid accidentally
+  publishing listening history. The named Pixel 7 JSON/CSV archive already in
+  this repository is tracked intentionally.
+
+After a future clone, restore the two signing files to their original paths if
+available, run `setup-toolchain.ps1`, and then run `build.ps1`. If the signing
+backup is unavailable, the build script safely generates a new identity; that
+APK can still be installed after uninstalling a differently signed copy.
 
 ## Export all history from another Pixel
 
