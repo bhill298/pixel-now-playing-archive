@@ -103,7 +103,7 @@ final class HistoryAdapter extends BaseAdapter {
         view.setTextSize(13.5f);
         Typeface dateHeader = Typeface.create("google-sans-text", Typeface.NORMAL);
         if (Build.VERSION.SDK_INT >= 28) {
-            dateHeader = Typeface.create(dateHeader, 500, false);
+            dateHeader = Typeface.create(dateHeader, 600, false);
         } else {
             dateHeader = Typeface.create("sans-serif-medium", Typeface.NORMAL);
         }
