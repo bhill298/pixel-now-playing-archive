@@ -22,6 +22,11 @@ $env:GRADLE_USER_HOME = Join-Path $toolchainRoot 'gradle-home'
 New-Item -ItemType Directory -Path $env:ANDROID_USER_HOME,$env:GRADLE_USER_HOME -Force | Out-Null
 $gradle = Join-Path $gradleRoot.FullName 'bin\gradle.bat'
 
+if ($Variant -eq 'Release') {
+    & (Join-Path $kitRoot 'setup-signing.ps1')
+    if ($LASTEXITCODE -ne 0) { throw "Signing setup exited with $LASTEXITCODE" }
+}
+
 Push-Location $kitRoot
 try {
     & $gradle ("assemble$Variant")

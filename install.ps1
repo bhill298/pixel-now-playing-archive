@@ -23,9 +23,12 @@ if (-not $Serial) {
 
 if (-not $Apk) {
     $stable = Join-Path $kitRoot 'releases\NowPlayingArchive-release.apk'
+    $directBuild = Join-Path $kitRoot 'app\build\outputs\apk\release\app-release.apk'
     if (Test-Path -LiteralPath $stable) {
         $Apk = $stable
-    } else {
+    } elseif (Test-Path -LiteralPath $directBuild) {
+        $Apk = $directBuild
+    } elseif (Test-Path -LiteralPath (Join-Path $kitRoot 'releases')) {
         $Apk = (Get-ChildItem -LiteralPath (Join-Path $kitRoot 'releases') -Filter '*-release.apk' -File |
             Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
     }

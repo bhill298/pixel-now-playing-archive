@@ -52,8 +52,8 @@ if (-not (Test-Path -LiteralPath (Join-Path $gradleContainer 'gradle-9.4.1\bin\g
     Expand-Archive -LiteralPath $gradleZip -DestinationPath $gradleContainer
 }
 
-$sdkManager = Join-Path $sdkRoot 'cmdline-tools\latest\bin\sdkmanager.bat'
-if (-not (Test-Path -LiteralPath $sdkManager)) {
+$androidCli = Join-Path $sdkRoot 'cmdline-tools\latest\bin\android.exe'
+if (-not (Test-Path -LiteralPath $androidCli)) {
     Expand-Archive -LiteralPath $androidZip -DestinationPath $cliExtract
     $latest = Join-Path $sdkRoot 'cmdline-tools\latest'
     New-Item -ItemType Directory -Path $latest -Force | Out-Null
@@ -66,13 +66,10 @@ $env:ANDROID_HOME = $sdkRoot
 $env:ANDROID_USER_HOME = Join-Path $toolchainRoot 'android-user'
 New-Item -ItemType Directory -Path $env:ANDROID_USER_HOME -Force | Out-Null
 
-Write-Host 'Accepting Android SDK licenses...'
-(1..50 | ForEach-Object { 'y' }) | & $sdkManager "--sdk_root=$sdkRoot" --licenses | Out-Host
-if ($LASTEXITCODE -ne 0) { throw "sdkmanager --licenses exited with $LASTEXITCODE" }
-
 Write-Host 'Installing Android platform and build tools...'
-& $sdkManager "--sdk_root=$sdkRoot" 'platform-tools' 'platforms;android-37' 'build-tools;36.0.0'
-if ($LASTEXITCODE -ne 0) { throw "sdkmanager install exited with $LASTEXITCODE" }
+& $androidCli "--sdk=$sdkRoot" sdk install `
+    'platform-tools' 'platforms/android-37.0' 'build-tools/36.0.0'
+if ($LASTEXITCODE -ne 0) { throw "android sdk install exited with $LASTEXITCODE" }
 
 Write-Host ''
 Write-Host 'Toolchain ready. Run .\build.ps1 -Variant Release'

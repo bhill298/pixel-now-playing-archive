@@ -1,245 +1,163 @@
 # Pixel Now Playing Archive Kit
 
-This folder contains everything project-specific needed to export a Pixel's Now
-Playing history, rebuild the personal archive app, install it, and import the
-history on another phone. It does not depend on the original Google APK or on
-files elsewhere in the old workspace.
+This source repository contains two related tools:
 
-The included app is **Now Playing Archive 1.16** (`com.brennan.nowplayingarchive`).
-It stores imported history locally, merges multiple exports without duplicates,
-supports favorites/search/day/time filters, and can export its combined database.
+- **Now Playing Archive 1.17**, an offline Android app that imports, merges,
+  searches, filters, favorites, displays, and re-exports Pixel Now Playing
+  history without modifying Google's private database.
+- A Python/ADB UI-automation exporter that scrolls the visible Now Playing
+  History screen and writes the JSON format accepted by the archive app.
 
-## Folder contents
+The app has no network permission. Imported history stays in its private local
+database until you clear it or export it manually.
 
-- `app/` — complete Android source code and resources.
-- `gradle/`, `gradlew`, `gradlew.bat` — Gradle wrapper.
-- `setup-toolchain.ps1` — downloads and verifies a portable JDK, Gradle, and
-  Android SDK inside this folder.
-- `build.ps1` — builds signed release or debug APKs.
-- `export_now_playing.py` — ADB/UI-automation exporter.
-- `export-history.ps1` — convenient exporter wrapper.
-- `install.ps1` — installs the APK and optionally copies the newest JSON export.
-- `signing/` and `keystore.properties` — the release signing key and credentials.
-- `archive/` — the completed Pixel 7 JSON/CSV export supplied with this kit.
-- `licenses/` — the official Google Sans Flex OFL and font README.
-- `releases/` — the already-built signed 1.16 APK.
-- `screenshots/` — on-device UI verification captures for this release.
-- `CHECKSUMS.sha256` — hashes for the APK, archive, exporter, and signing files.
+## What is included
+
+- `app/` — complete Android application source and required runtime resources.
+- `setup-toolchain.ps1` — installs a pinned portable JDK, Gradle, Android SDK,
+  platform tools, and build tools under the ignored `.toolchain/` directory.
+- `setup-signing.ps1` — creates a local release key and Gradle signing
+  properties. `build.ps1` calls it automatically for release builds.
+- `build.ps1` — builds a debug or signed optimized release APK.
+- `install.ps1` — installs a built APK, optionally copies an export, and launches
+  the app.
+- `export_now_playing.py` and `export-history.ps1` — the exporter and its
+  PowerShell wrapper.
+- `archive/pixel7-now-playing-export.json` — an example of the accepted schema;
+  the CSV beside it is the corresponding human-readable export.
+
+Generated APKs, screenshots, toolchains, build directories, signing keys, and
+signing passwords are intentionally ignored and are not stored in Git.
 
 ## Requirements
 
-- Windows 10 or later with PowerShell 7 or Windows PowerShell 5.1.
-- Python 3 for history export. The exporter uses only Python's standard library.
-- USB debugging enabled on the Pixel(s), with the computer authorized.
-- Internet access for the initial toolchain setup and first Gradle dependency
-  download. The downloaded tools and Gradle cache remain under `.toolchain/`.
+- Windows 10 or later with PowerShell 5.1 or PowerShell 7.
+- Internet access for the first toolchain setup and Gradle dependency download.
+- Python 3 for history export; the exporter uses only the standard library.
+- A Pixel with USB debugging enabled and this computer authorized for ADB.
 
-The setup script installs portable copies; it does not require administrator
-rights or alter the system-wide Java/Android installation.
+No system-wide Java, Gradle, or Android SDK installation is required.
 
-## Quick start using the already-built APK and included export
-
-Attach and authorize the destination Pixel, then run:
+## Fresh-clone build and install
 
 ```powershell
+git clone YOUR_REPOSITORY_URL pixel-now-playing-archive-kit
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
-.\install.ps1 -Serial YOUR_DESTINATION_SERIAL `
-    -Apk .\releases\NowPlayingArchive-v1.16-release.apk `
-    -Json .\archive\pixel7-now-playing-export.json
-```
-
-The JSON is copied to:
-
-```text
-Downloads/NowPlayingArchive/pixel7-now-playing-export.json
-```
-
-Open **Now Playing Archive**, tap the settings gear, choose **Import history**,
-and select that file.
-
-If exactly one authorized phone is attached, `-Serial` may be omitted.
-
-## Export from another Pixel
-
-1. Enable **Developer options → USB debugging** on the source Pixel.
-2. Connect it by USB and approve the computer's debugging key.
-3. Unlock the phone.
-4. Open **Now Playing**, select **History**, and leave it in portrait orientation.
-5. Run:
-
-```powershell
-.\export-history.ps1 -Serial YOUR_SOURCE_SERIAL
-```
-
-The script pauses until you confirm that History is visible. It then:
-
-- detects the effective display size;
-- temporarily enables stay-awake over USB if necessary;
-- reopens History at its newest entry;
-- scrolls using display-relative coordinates;
-- checkpoints JSON and CSV after each page;
-- restores the original stay-awake setting when finished.
-
-Do not touch or lock the source phone during the automated scroll. An interrupted
-run leaves its latest checkpoint on disk. New exports are written under
-`archive/` with timestamped names.
-
-You can also call the Python script directly:
-
-```powershell
-python .\export_now_playing.py `
-    --serial YOUR_SOURCE_SERIAL `
-    --output .\archive\my-pixel-export.json
-```
-
-Use `python .\export_now_playing.py --help` for all options.
-
-## Build the app
-
-Install the pinned portable toolchain once:
-
-```powershell
-.\setup-toolchain.ps1
-```
-
-Build the signed, optimized release:
-
-```powershell
 .\build.ps1 -Variant Release
+.\install.ps1 -Serial YOUR_DESTINATION_SERIAL -SkipJsonCopy
 ```
 
-Output:
+If exactly one authorized Android device is connected, `-Serial` can be omitted.
+
+The pinned toolchain consists of Microsoft OpenJDK 17.0.20.1, Gradle 9.4.1,
+Android Gradle Plugin 9.2.0, Android API 37, and Build Tools 36.0.0. Downloaded
+archives are checked against SHA-256 values embedded in `setup-toolchain.ps1`.
+
+Build outputs are local and ignored:
 
 ```text
+app/build/outputs/apk/release/app-release.apk
 releases/NowPlayingArchive-release.apk
 ```
 
-Build a debug APK instead:
+For a debug build:
 
 ```powershell
 .\build.ps1 -Variant Debug
 ```
 
-The build uses:
+## Local signing key
 
-- Microsoft OpenJDK 17.0.20.1;
-- Gradle 9.4.1;
-- Android Gradle Plugin 9.2.0;
-- Android API 37 and Build Tools 36.0.0.
-
-Downloads are pinned and SHA-256 verified by `setup-toolchain.ps1`. Android SDK
-licenses are accepted by the setup process because those packages are required
-to compile the app.
-
-## Install a newly built version
-
-```powershell
-.\install.ps1 -Serial YOUR_DESTINATION_SERIAL
-```
-
-The helper selects `releases/NowPlayingArchive-release.apk`, installs it with
-`adb install -r`, copies the newest JSON under `archive/` to Downloads, and
-launches the app. Use `-SkipJsonCopy` when only updating the APK.
-
-Manual equivalent:
-
-```powershell
-.\.toolchain\android-sdk\platform-tools\adb.exe `
-    -s YOUR_DESTINATION_SERIAL install -r `
-    .\releases\NowPlayingArchive-release.apk
-```
-
-Because releases are signed with the included key, Android accepts later builds
-as in-place updates and retains the app database.
-
-## Signing key — back this up
-
-The release signing material is:
+The first release build creates these ignored files:
 
 ```text
 signing/now-playing-archive-release.jks
 keystore.properties
 ```
 
-Both are deliberately included so this folder can produce compatible updates.
-Keep the folder private: `keystore.properties` contains the signing passwords.
-If the key is lost, a differently signed build requires uninstalling the old app
-first, which deletes its private database unless the combined history is exported.
+Back up both files together. Android only permits an in-place update when the new
+APK is signed by the same key. A fresh clone without that backup generates a new
+key and therefore requires uninstalling an existing differently signed build;
+uninstalling clears that installation's private database, so export it first.
 
-## Moving another phone later
+Never commit the key or `keystore.properties`.
 
-1. Export the old phone into a new JSON file.
-2. Install or update Now Playing Archive on the destination phone.
-3. Copy the JSON with `adb push` or `install.ps1 -Json ...`.
-4. Import it through the app's settings.
+## Export all history from another Pixel
 
-Imports are merged using timestamp, title, and artist. Re-importing an existing
-file does not create duplicates, and a favorite flag can upgrade an existing row.
+1. Enable **Developer options → USB debugging** on the source Pixel.
+2. Connect it by USB and approve the debugging authorization prompt.
+3. Unlock it and open **Now Playing → History** in portrait orientation.
+4. Run:
 
-## Important limitations
+```powershell
+.\export-history.ps1 -Serial YOUR_SOURCE_SERIAL
+```
 
-- The exporter reads the visible Google Now Playing History UI; UI changes in a
-  future Google release may require updating its selectors.
-- The archive app cannot write data back into Google's private Now Playing
-  database without root/system privileges.
-- UI icons and placeholder geometry recovered from the supplied Google APK are
-  included for this private personal-use project. Review or replace those assets
-  before distributing the app.
-- The app has no network permission and does not upload history.
+The wrapper uses the portable ADB from `.toolchain/` when available, otherwise
+an `adb` on `PATH`. It prompts before automation begins, detects display size,
+temporarily enables stay-awake over USB, scrolls with display-relative
+coordinates, checkpoints after every page, and restores the original stay-awake
+setting when finished. Do not touch or lock the phone during the scroll.
+
+By default it creates ignored, timestamped files under `archive/`:
+
+```text
+archive/now-playing-export-YYYYMMDD-HHMMSS.json
+archive/now-playing-export-YYYYMMDD-HHMMSS.csv
+```
+
+Specify a destination or maximum number of scrolls when needed:
+
+```powershell
+.\export-history.ps1 `
+    -Serial YOUR_SOURCE_SERIAL `
+    -Output .\archive\my-phone.json `
+    -MaxScrolls 30000
+```
+
+The direct Python interface is also available:
+
+```powershell
+python .\export_now_playing.py --help
+python .\export_now_playing.py `
+    --serial YOUR_SOURCE_SERIAL `
+    --output .\archive\my-phone.json
+```
+
+The JSON document uses `schema_version: 1` and an `entries` array. Each entry
+contains the recognized local timestamp, date label, time, title, artist, raw
+subtitle, and newest-first position. This is exactly the format consumed by the
+app. CSV is supplementary and is not imported by the app.
+
+## Copy and import an export
+
+Build the app, attach the destination phone, and run:
+
+```powershell
+.\install.ps1 `
+    -Serial YOUR_DESTINATION_SERIAL `
+    -Json .\archive\my-phone.json
+```
+
+The JSON is copied to `Download/NowPlayingArchive/`. In the app, open the gear,
+choose **Import history**, and select the file. Multiple imports are merged using
+recognized timestamp, title, and artist; re-importing a file does not duplicate
+existing songs, and a later favorite flag can upgrade an existing entry.
+
+## Limitations
+
+- The exporter reads the visible Google UI and may require selector updates if
+  Google changes that UI.
+- It cannot read or write Google's private database without root/system access.
+- UI assets recovered from the supplied Google APK are present for this personal
+  project; review licensing before distributing the app.
+- The archive app uses placeholder album art and does not fetch data online.
 
 ## Verification
 
-The bundled 1.16 release was built with R8 optimization, signed with the included
-keystore, passed Android lint, and was installed as an in-place update on Android
-17. Its filter behavior was verified on-device: day and time selections remain
-independently active, the selected menu item is checked, and selecting it again
-clears that filter. The History title and gear scroll away from the absolute top.
-Reversing direction reveals the floating search control in direct proportion to
-the scroll distance, and scrolling down smoothly hides it while exposing the list.
-When scrolling stops, the list itself settles so a search control that is at
-least half exposed becomes fully open, while one that is less than half exposed
-becomes fully closed. The songs move through the remaining distance together
-with the search control. Small opposite-direction movements therefore return the
-whole list to its previous resting state. The same midpoint behavior applies to
-the original search row while the list is still near its absolute top.
-The settle lasts 300 ms, matching the original APK's Material medium-2 motion
-duration instead of the earlier, noticeably faster 180 ms transition. It is
-rendered with per-frame list offsets and the original APK's emphasized-decelerate
-curve (`0.1, 0.7, 0.1, 1.0`) instead of `ListView`'s stepped position scroller.
-The History heading, date headers, and song titles use the same stronger visual
-hierarchy as the Pixel UI, while artist/time subtitles remain lighter. The search
-label and settings glyph are intentionally smaller, and the bottom navigation has
-Pixel-matched icon sizing, vertical inset, circular selection surfaces, tab
-spacing, and screen-edge placement. Date headers use the original app's smaller,
-darker treatment independently of the lighter song subtitles; on the verification
-device, both render to a 47 px glyph height. The app bundles the official
-six-axis Google Sans Flex variable TTF and applies the same Material 3 optical
-size, rounded-terminal, width, and weight axes found in Google's APK. Search,
-headings, song titles, subtitles, filters, and settings all use that family with
-role-appropriate variations rather than synthesized static-font weights.
-The v1.12 header was compared against a fresh native-resolution capture from the
-Google app on the same Pixel: both title and gear share the original x positions,
-the title has the same 230 px glyph width, and the gear has the same 56 x 60 px
-glyph bounds. The title uses the darker 500-weight treatment requested here.
-With the chrome hidden, the viewport holds ten complete 82 dp song rows and part
-of an eleventh.
-
-Verification captures are `screenshots/filters-both-selected.png`,
-`screenshots/scrolling-search.png`, and
-`screenshots/scrolling-search-partial.png`. The current top-level typography and
-navigation comparison is `screenshots/v1.11-flex-home.png`; the corresponding
-search view is `screenshots/v1.11-flex-search.png`. The current header capture is
-`screenshots/v1.12-header-match.png`; the four verified search snap states are in
-`screenshots/v1.13-search-snap.png`. The v1.14 list-snap capture includes both
-floating-search directions and the fully shown/hidden top-of-list endpoints in
-`screenshots/v1.14-list-snap.png`. The v1.15 endpoint recheck after applying the
-slower duration is `screenshots/v1.15-snap-endpoints.png`.
-The corresponding v1.16 per-frame endpoint check is
-`screenshots/v1.16-smooth-snap-endpoints.png`.
-
-Bundled APK SHA-256:
-
-```text
-See `CHECKSUMS.sha256` for the current release hash.
-```
+Version 1.17 was release-built with R8, passed Android release lint, and was
+installed on Android 17. Its dark-mode date headings render at the requested
+darker `#C8C6BD`. The snap-to-search behavior moves the list and search control
+together over 300 ms using the Pixel APK's emphasized-decelerate curve
+`(0.1, 0.7, 0.1, 1.0)` with per-frame offsets.

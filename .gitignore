@@ -1,7 +1,39 @@
+# Downloaded tools, Gradle state, and Android build outputs
+/.toolchain/
 /.gradle/
+/gradle/wrapper/
+/gradlew
+/gradlew.bat
 /app/build/
 /build/
-/.toolchain/
-/releases/NowPlayingArchive-debug.apk
-!/keystore.properties
-!/signing/now-playing-archive-release.jks
+/local.properties
+
+# Generated packages and verification captures
+/releases/
+/screenshots/
+*.apk
+*.aab
+*.apks
+*.idsig
+*.class
+*.dex
+__pycache__/
+*.py[cod]
+
+# Local signing identity and credentials
+/signing/
+/keystore.properties
+*.jks
+*.keystore
+
+# Exporter output (the named Pixel 7 archive remains an intentional fixture)
+/archive/now-playing-export-*.json
+/archive/now-playing-export-*.csv
+/archive/*.tmp
+
+# Local icon experiments and obsolete raster source
+/icon-candidates/
+/app/src/main/res/drawable-nodpi/
+
+# Miscellaneous local output
+*.log
