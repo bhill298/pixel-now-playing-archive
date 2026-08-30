@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -198,8 +197,7 @@ public final class MainActivity extends Activity {
 
         searchField = new EditText(this);
         searchField.setHint("Search history");
-        searchField.setTextSize(17);
-        searchField.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        PixelTypography.apply(searchField, 16, 400, false);
         searchField.setSingleLine(true);
         searchField.setTextColor(getColor(R.color.np_primary));
         searchField.setHintTextColor(getColor(R.color.np_secondary));
@@ -274,14 +272,7 @@ public final class MainActivity extends Activity {
         TextView heading = new TextView(this);
         heading.setText(title);
         heading.setTextColor(getColor(R.color.np_primary));
-        heading.setTextSize(23);
-        Typeface headingTypeface = Typeface.create("google-sans", Typeface.NORMAL);
-        if (Build.VERSION.SDK_INT >= 28) {
-            headingTypeface = Typeface.create(headingTypeface, 500, false);
-        } else {
-            headingTypeface = Typeface.create("sans-serif-medium", Typeface.NORMAL);
-        }
-        heading.setTypeface(headingTypeface);
+        PixelTypography.apply(heading, 24, 400, false);
         heading.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams headingParams = new LinearLayout.LayoutParams(0, dp(58), 1);
         if (showBack) headingParams.setMarginStart(dp(8));
@@ -477,7 +468,7 @@ public final class MainActivity extends Activity {
             }
 
             TextView label = bodyText(option);
-            label.setTextSize(16);
+            PixelTypography.apply(label, 16, 400, false);
             label.setTextColor(getColor(R.color.np_popup_text));
             label.setGravity(Gravity.CENTER_VERTICAL);
             row.addView(label, new LinearLayout.LayoutParams(0,
@@ -556,10 +547,9 @@ public final class MainActivity extends Activity {
         item.setPadding(dp(24), dp(14), dp(24), dp(14));
         item.setBackgroundResource(R.drawable.rounded_surface);
         TextView heading = bodyText(title);
-        heading.setTextSize(21);
-        heading.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        PixelTypography.apply(heading, 21, 500, true);
         TextView detail = bodyText(subtitle);
-        detail.setTextSize(16);
+        PixelTypography.apply(detail, 16, 400, false);
         detail.setTextColor(getColor(R.color.np_secondary));
         item.addView(heading);
         item.addView(detail);
@@ -680,9 +670,8 @@ public final class MainActivity extends Activity {
     private Button flatButton(String text) {
         Button button = new Button(this);
         button.setText(text);
-        button.setTextSize(16);
+        PixelTypography.apply(button, 16, 500, false);
         button.setTextColor(getColor(R.color.np_primary));
-        button.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
         button.setAllCaps(false);
         button.setMinWidth(dp(84));
         button.setMinimumWidth(dp(84));
@@ -703,8 +692,7 @@ public final class MainActivity extends Activity {
         TextView view = new TextView(this);
         view.setText(text);
         view.setTextColor(getColor(R.color.np_primary));
-        view.setTextSize(18);
-        view.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        PixelTypography.apply(view, 18, 400, false);
         return view;
     }
 
@@ -714,8 +702,7 @@ public final class MainActivity extends Activity {
         searchRow.setPadding(dp(24), dp(8), dp(24), dp(8));
         EditText launcher = new EditText(this);
         launcher.setHint("Search history");
-        launcher.setTextSize(17);
-        launcher.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        PixelTypography.apply(launcher, 16, 400, false);
         launcher.setSingleLine(true);
         launcher.setTextColor(getColor(R.color.np_primary));
         launcher.setHintTextColor(getColor(R.color.np_secondary));

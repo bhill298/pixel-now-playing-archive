@@ -5,7 +5,7 @@ Playing history, rebuild the personal archive app, install it, and import the
 history on another phone. It does not depend on the original Google APK or on
 files elsewhere in the old workspace.
 
-The included app is **Now Playing Archive 1.10** (`com.brennan.nowplayingarchive`).
+The included app is **Now Playing Archive 1.11** (`com.brennan.nowplayingarchive`).
 It stores imported history locally, merges multiple exports without duplicates,
 supports favorites/search/day/time filters, and can export its combined database.
 
@@ -21,7 +21,8 @@ supports favorites/search/day/time filters, and can export its combined database
 - `install.ps1` — installs the APK and optionally copies the newest JSON export.
 - `signing/` and `keystore.properties` — the release signing key and credentials.
 - `archive/` — the completed Pixel 7 JSON/CSV export supplied with this kit.
-- `releases/` — the already-built signed 1.10 APK.
+- `licenses/` — the official Google Sans Flex OFL and font README.
+- `releases/` — the already-built signed 1.11 APK.
 - `screenshots/` — on-device UI verification captures for this release.
 - `CHECKSUMS.sha256` — hashes for the APK, archive, exporter, and signing files.
 
@@ -44,7 +45,7 @@ Attach and authorize the destination Pixel, then run:
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
 .\install.ps1 -Serial YOUR_DESTINATION_SERIAL `
-    -Apk .\releases\NowPlayingArchive-v1.10-release.apk `
+    -Apk .\releases\NowPlayingArchive-v1.11-release.apk `
     -Json .\archive\pixel7-now-playing-export.json
 ```
 
@@ -189,7 +190,7 @@ file does not create duplicates, and a favorite flag can upgrade an existing row
 
 ## Verification
 
-The bundled 1.10 release was built with R8 optimization, signed with the included
+The bundled 1.11 release was built with R8 optimization, signed with the included
 keystore, passed Android lint, and was installed as an in-place update on Android
 17. Its filter behavior was verified on-device: day and time selections remain
 independently active, the selected menu item is checked, and selecting it again
@@ -202,15 +203,19 @@ label and settings glyph are intentionally smaller, and the bottom navigation ha
 Pixel-matched icon sizing, vertical inset, circular selection surfaces, tab
 spacing, and screen-edge placement. Date headers use the original app's smaller,
 darker treatment independently of the lighter song subtitles; on the verification
-device, both render to a 47 px glyph height. The archive uses a 600 font weight
-to reproduce the original label's stronger stroke density.
+device, both render to a 47 px glyph height. The app bundles the official
+six-axis Google Sans Flex variable TTF and applies the same Material 3 optical
+size, rounded-terminal, width, and weight axes found in Google's APK. Search,
+headings, song titles, subtitles, filters, and settings all use that family with
+role-appropriate variations rather than synthesized static-font weights.
 With the chrome hidden, the viewport holds ten complete 82 dp song rows and part
 of an eleventh.
 
 Verification captures are `screenshots/filters-both-selected.png`,
 `screenshots/scrolling-search.png`, and
 `screenshots/scrolling-search-partial.png`. The current top-level typography and
-navigation comparison is `screenshots/v1.10-home-top.png`.
+navigation comparison is `screenshots/v1.11-flex-home.png`; the corresponding
+search view is `screenshots/v1.11-flex-search.png`.
 
 Bundled APK SHA-256:
 

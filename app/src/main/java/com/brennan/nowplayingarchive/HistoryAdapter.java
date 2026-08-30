@@ -1,9 +1,7 @@
 package com.brennan.nowplayingarchive;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,14 +98,7 @@ final class HistoryAdapter extends BaseAdapter {
     private TextView makeHeader() {
         TextView view = new TextView(context);
         view.setTextColor(context.getColor(R.color.np_date_header));
-        view.setTextSize(13.5f);
-        Typeface dateHeader = Typeface.create("google-sans-text", Typeface.NORMAL);
-        if (Build.VERSION.SDK_INT >= 28) {
-            dateHeader = Typeface.create(dateHeader, 600, false);
-        } else {
-            dateHeader = Typeface.create("sans-serif-medium", Typeface.NORMAL);
-        }
-        view.setTypeface(dateHeader);
+        PixelTypography.apply(view, 14, 600, true);
         view.setGravity(Gravity.BOTTOM);
         view.setPadding(dp(24), dp(8), dp(20), dp(10));
         view.setLayoutParams(new android.widget.AbsListView.LayoutParams(
@@ -139,20 +130,12 @@ final class HistoryAdapter extends BaseAdapter {
         labels.setPadding(dp(16), 0, dp(6), 0);
         TextView title = new TextView(context);
         title.setTextColor(context.getColor(R.color.np_primary));
-        title.setTextSize(16);
-        Typeface songTitle = Typeface.create("google-sans-text", Typeface.NORMAL);
-        if (Build.VERSION.SDK_INT >= 28) {
-            songTitle = Typeface.create(songTitle, 600, false);
-        } else {
-            songTitle = Typeface.create("sans-serif-medium", Typeface.NORMAL);
-        }
-        title.setTypeface(songTitle);
+        PixelTypography.apply(title, 16, 600, true);
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         TextView subtitle = new TextView(context);
         subtitle.setTextColor(context.getColor(R.color.np_secondary));
-        subtitle.setTextSize(15);
-        subtitle.setTypeface(Typeface.create("google-sans-text", Typeface.NORMAL));
+        PixelTypography.apply(subtitle, 16, 400, false);
         subtitle.setSingleLine(true);
         subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
         labels.addView(title, new LinearLayout.LayoutParams(
