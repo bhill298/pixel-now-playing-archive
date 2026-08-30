@@ -29,6 +29,12 @@ database until you clear it or export it manually.
 Generated APKs, screenshots, toolchains, build directories, signing keys, and
 signing passwords are intentionally ignored and are not stored in Git.
 
+The only tracked binary-format source dependency is
+`app/src/main/res/font/google_sans_flex_variable.ttf`. It is the exact OFL font
+resource used to reproduce the Pixel typography and is required at build time;
+it is not a generated build artifact. Keeping it in the repository makes a
+fresh clone reproducible without depending on an unstable third-party download.
+
 ## Requirements
 
 - Windows 10 or later with PowerShell 5.1 or PowerShell 7.
