@@ -5,7 +5,7 @@ Playing history, rebuild the personal archive app, install it, and import the
 history on another phone. It does not depend on the original Google APK or on
 files elsewhere in the old workspace.
 
-The included app is **Now Playing Archive 1.7** (`com.brennan.nowplayingarchive`).
+The included app is **Now Playing Archive 1.8** (`com.brennan.nowplayingarchive`).
 It stores imported history locally, merges multiple exports without duplicates,
 supports favorites/search/day/time filters, and can export its combined database.
 
@@ -21,7 +21,7 @@ supports favorites/search/day/time filters, and can export its combined database
 - `install.ps1` — installs the APK and optionally copies the newest JSON export.
 - `signing/` and `keystore.properties` — the release signing key and credentials.
 - `archive/` — the completed Pixel 7 JSON/CSV export supplied with this kit.
-- `releases/` — the already-built signed 1.7 APK.
+- `releases/` — the already-built signed 1.8 APK.
 - `screenshots/` — on-device UI verification captures for this release.
 - `CHECKSUMS.sha256` — hashes for the APK, archive, exporter, and signing files.
 
@@ -44,7 +44,7 @@ Attach and authorize the destination Pixel, then run:
 Set-Location .\pixel-now-playing-archive-kit
 .\setup-toolchain.ps1
 .\install.ps1 -Serial YOUR_DESTINATION_SERIAL `
-    -Apk .\releases\NowPlayingArchive-v1.7-release.apk `
+    -Apk .\releases\NowPlayingArchive-v1.8-release.apk `
     -Json .\archive\pixel7-now-playing-export.json
 ```
 
@@ -189,7 +189,7 @@ file does not create duplicates, and a favorite flag can upgrade an existing row
 
 ## Verification
 
-The bundled 1.7 release was built with R8 optimization, signed with the included
+The bundled 1.8 release was built with R8 optimization, signed with the included
 keystore, passed Android lint, and was installed as an in-place update on Android
 17. Its filter behavior was verified on-device: day and time selections remain
 independently active, the selected menu item is checked, and selecting it again
@@ -199,14 +199,16 @@ the scroll distance, and scrolling down smoothly hides it while exposing the lis
 The History heading, date headers, and song titles use the same stronger visual
 hierarchy as the Pixel UI, while artist/time subtitles remain lighter. The search
 label and settings glyph are intentionally smaller, and the bottom navigation has
-Pixel-matched icon sizing, vertical inset, and screen-edge placement.
+Pixel-matched icon sizing, vertical inset, circular selection surfaces, tab
+spacing, and screen-edge placement. Date headers use the original app's smaller,
+darker treatment independently of the lighter song subtitles.
 With the chrome hidden, the viewport holds ten complete 82 dp song rows and part
 of an eleventh.
 
 Verification captures are `screenshots/filters-both-selected.png`,
 `screenshots/scrolling-search.png`, and
-`screenshots/scrolling-search-partial.png`. The v1.7 top-level typography and
-navigation comparison is `screenshots/v1.7-home-top.png`.
+`screenshots/scrolling-search-partial.png`. The current top-level typography and
+navigation comparison is `screenshots/v1.8-home-top.png`.
 
 Bundled APK SHA-256:
 

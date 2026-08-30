@@ -9,6 +9,7 @@
     <color name="np_popup_surface">#FCF8F9</color>
     <color name="np_popup_text">#5F5C65</color>
     <color name="np_primary">#33332F</color>
+    <color name="np_date_header">#5F5E58</color>
     <color name="np_secondary">#706E67</color>
     <color name="np_accent">#68685A</color>
     <color name="np_danger">#B3261E</color>

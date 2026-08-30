@@ -305,17 +305,17 @@ public final class MainActivity extends Activity {
         String[] labels = {"History", "Favorites"};
         for (int i = 0; i < icons.length; i++) {
             ImageButton button = iconButton(icons[i], labels[i]);
-            button.setPadding(dp(14), dp(10), dp(14), dp(10));
+            button.setPadding(dp(14), dp(14), dp(14), dp(14));
             boolean isSelected = i == selected;
             if (isSelected) button.setBackgroundResource(R.drawable.rounded_selected);
             button.setColorFilter(getColor(isSelected
                     ? R.color.np_on_nav_selected : R.color.np_secondary));
             final int tab = i;
             button.setOnClickListener(view -> showHistory(tab == 1));
-            nav.addView(button, new LinearLayout.LayoutParams(dp(52), dp(44)));
+            nav.addView(button, new LinearLayout.LayoutParams(dp(52), dp(52)));
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                dp(120), dp(56), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+                dp(120), dp(64), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         params.bottomMargin = dp(22);
         nav.setLayoutParams(params);
         return nav;
